@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detection Logs</title>
+</head>
+<body>
+    <h1>Detection History</h1>
+    <table border="1">
+        <tr>
+            <th>Animal</th>
+            <th>Risk</th>
+            <th>Time</th>
+        </tr>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.animal }}</td>
+            <td>{{ log.risk }}</td>
+            <td>{{ log.time }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
