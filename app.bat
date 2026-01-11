@@ -1,5 +1,5 @@
 @echo off
 cd E:\Project\AnimalDetector\py_file
 
-start "" "detect.bat"
+start "" "flask_app.bat"
 
