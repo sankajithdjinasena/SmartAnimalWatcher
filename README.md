@@ -44,7 +44,7 @@ YOLO object detection, and a Flask-based web dashboard.
 
 ## 📂 Project Structure
 
-    animal_intrusion_system/
+    animaldetector/
     │
     ├── app.py
     ├── detect.py
@@ -58,10 +58,10 @@ YOLO object detection, and a Flask-based web dashboard.
 ## ⚙️ Installation
 
 1.  Clone the repository\
-    `git clone https://github.com/your-username/animal-intrusion-detection.git`
+    `git clone https://github.com/sankajithdjinasena/animaldetector.git`
 
 2.  Navigate to the project folder\
-    `cd animal-intrusion-detection`
+    `cd animaldetector`
 
 3.  Install required packages\
     `pip install ultralytics opencv-python flask numpy`
@@ -106,9 +106,7 @@ YOLO object detection, and a Flask-based web dashboard.
 
 ## 👨‍💻 Author
 
-Developed by **Sankajith**\
-Faculty of Computing\
-Sabaragamuwa University of Sri Lanka
+Developed by **Sankajith D. Jinasena**\
 
 ------------------------------------------------------------------------
 
