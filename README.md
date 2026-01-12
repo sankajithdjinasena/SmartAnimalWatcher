@@ -1,4 +1,4 @@
-# 🐾 Smart Animal Intrusion Detection System
+# 🐾 Smart Animal Intrusion Detection System (Smart Animal Watcher)
 
 A real-time AI-powered surveillance system that detects animals entering
 a home environment, classifies them as safe or dangerous, and sends
@@ -13,7 +13,6 @@ YOLO object detection, and a Flask-based web dashboard.
 -   🧠 AI-powered animal classification (YOLOv8)
 -   ⚠️ Risk labeling: Safe / Dangerous
 -   🌐 Web dashboard (Flask)
--   📧 Gmail alerts for dangerous animals
 -   📸 Automatic snapshot capture
 -   🕒 Detection logs with timestamps
 -   💻 Windows-compatible
@@ -34,40 +33,49 @@ YOLO object detection, and a Flask-based web dashboard.
 -   HTML
 -   CSS
 -   JavaScript
--   Bootstrap
 
 ### Notifications
 
--   Gmail SMTP (Email alerts)
+-   Gmail SMTP (Email alerts) # On process
 
 ------------------------------------------------------------------------
 
 ## 📂 Project Structure
-
-    animaldetector/
-    │
-    ├── app.py
-    ├── detect.py
-    ├── snapshots/
-    ├── static/
-    ├── templates/
-    └── README.md
+├─ app.bat                       # Optional batch to run everything
+├─ README.md
+├─ requirements.txt
+└─ application/
+    ├─ __pycache__/                # Python cache
+    ├─ snapshots/                   # Saved snapshots of detected animals
+    ├─ templates/
+    │  ├─ css/
+    │  │  ├─ gallery.css
+    │  │  ├─ index.css
+    │  │  └─ logs.css
+    │  ├─ gallery.html
+    │  ├─ index.html
+    │  └─ logs.html
+    ├─ app.py                        # Main Flask application
+    ├─ detect.py                     # YOLO detection script
+    ├─ flask_app.bat                 # Batch file to run Flask app
+    └─ yolov8n.pt                    # Pretrained YOLOv8 model
+    
 
 ------------------------------------------------------------------------
 
 ## ⚙️ Installation
 
 1.  Clone the repository\
-    `git clone https://github.com/sankajithdjinasena/animaldetector.git`
+    `git clone https://github.com/sankajithdjinasena/SmartAnimalWatcher.git`
 
 2.  Navigate to the project folder\
-    `cd animaldetector`
+    `cd SmartAnimalWatcher`
 
 3.  Install required packages\
     `pip install ultralytics opencv-python flask numpy`
 
 4.  Run the detection script\
-    `python detect.py`
+    `run app.bat`
 
 ------------------------------------------------------------------------
 
