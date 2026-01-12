@@ -1,3 +1,4 @@
+from cProfile import label
 from flask import Flask, render_template, Response
 import cv2
 from ultralytics import YOLO
@@ -29,21 +30,30 @@ def generate_frames():
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
 
                 if label in dangerous_animals:
-                    risk = "DANGEROUS"
+                    risk = "High"
                     color = (0, 0, 255)
 
                     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     filename = f"snapshots/{label}_{timestamp}.jpg"
                     cv2.imwrite(filename, frame)
                 else:
-                    risk = "SAFE"
+                    risk = "Low"
                     color = (0, 255, 0)
 
-                logs.append({
-                    "animal": label,
-                    "risk": risk,
-                    "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                })
+                last_seen = {}
+                COOLDOWN = 10  # seconds
+
+                now = datetime.now()
+                key = label
+
+                if key not in last_seen or (now - last_seen[key]).seconds > COOLDOWN:
+                    logs.append({
+                        "animal": label,
+                        "risk": risk,
+                        "time": now.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                    last_seen[key] = now
+
 
                 cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
                 cv2.putText(frame, f"{label.upper()} - {risk}",
@@ -64,10 +74,60 @@ def index():
 def video():
     return Response(generate_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+from flask import request
+from datetime import datetime, timedelta
 
 @app.route('/logs')
 def view_logs():
-    return render_template('logs.html', logs=logs)
+    page = int(request.args.get('page', 1))
+    risk_filter = request.args.get('risk', 'all')
+
+    PER_PAGE = 50
+
+    last_seen = {}
+    COOLDOWN = 10  # seconds
+
+
+    filtered_logs = logs.copy()
+
+    # Sort by latest first
+    filtered_logs.sort(
+    key=lambda x: datetime.strptime(x['time'], "%Y-%m-%d %H:%M:%S"),
+    reverse=True
+    )
+
+    # Apply risk filter
+    if risk_filter == 'high':
+        filtered_logs = [l for l in filtered_logs if l['risk'].lower() == 'high']
+    elif risk_filter == 'today':
+        today = datetime.now().date()
+        filtered_logs = [
+            l for l in filtered_logs
+            if datetime.strptime(l['time'], "%Y-%m-%d %H:%M:%S").date() == today
+        ]
+    elif risk_filter == 'week':
+        week_ago = datetime.now() - timedelta(days=7)
+        filtered_logs = [
+            l for l in filtered_logs
+            if datetime.strptime(l['time'], "%Y-%m-%d %H:%M:%S") >= week_ago
+        ]
+
+    total = len(filtered_logs)
+    start = (page - 1) * PER_PAGE
+    end = start + PER_PAGE
+
+    page_logs = filtered_logs[start:end]
+    total_pages = (total + PER_PAGE - 1) // PER_PAGE
+
+    return render_template(
+    'logs.html',
+    logs=page_logs,          # paginated table data
+    all_logs=filtered_logs,  # FULL filtered data (for stats)
+    page=page,
+    total_pages=total_pages,
+    risk_filter=risk_filter
+    )
+
 
 @app.route('/gallery')
 def gallery():
