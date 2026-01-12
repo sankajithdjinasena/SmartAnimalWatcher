@@ -17,6 +17,10 @@
             padding: 20px;
         }
 
+        body a{
+            text-decoration: none;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -198,24 +202,48 @@
                 <h3>Live Feed</h3>
                 <div class="stat-value">🔴 LIVE</div>
             </div>
-            <div class="stat-card">
-                <h3>Detections Today</h3>
-                <div class="stat-value">12</div>
-            </div>
+
             <div class="stat-card">
                 <h3>System Status</h3>
                 <div class="stat-value">🟢 Online</div>
             </div>
+
+            <div class="stat-card">
+                <button id="toggleBtn" class="nav-button" onclick="toggleVideo()">Turn OFF Video</button>
+                <h3 style="margin-top: 15px;">Camera Status</h3>
+            </div>
         </div>
 
         <div class="video-container">
-            <img src="/video" width="720" alt="Live Animal Detection Feed">
+            <img id="videoFeed" src="/video" width="720" alt="Live Animal Detection Feed">
         </div>
+
+    
 
         <div class="nav-links">
             <a href="/logs" class="nav-button logs">View Detection Logs</a>
             <a href="/gallery" class="nav-button gallery">Detection Gallery</a>
         </div>
+
+        <script>
+        let videoOn = true;
+
+        function toggleVideo() {
+            const video = document.getElementById("videoFeed");
+            const button = document.getElementById("toggleBtn");
+
+            if (videoOn) {
+                video.src = "";                 // stop stream
+                button.innerText = "Turn ON Video";
+            } else {
+                video.src = "/video";           // resume stream
+                button.innerText = "Turn OFF Video";
+            }
+
+            videoOn = !videoOn;
+        }
+        </script>
+
 
         <footer>
             <p>Animal Detection System v2.1 | Real-time monitoring active | Last updated: Just now</p>

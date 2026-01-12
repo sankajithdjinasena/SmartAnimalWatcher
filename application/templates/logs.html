@@ -16,6 +16,9 @@
             min-height: 100vh;
             padding: 20px;
         }
+        body a{
+            text-decoration: none;
+        }
 
         .container {
             max-width: 1400px;
@@ -377,30 +380,34 @@
         <header>
             <h1>Detection History Log</h1>
             <p class="subtitle">Comprehensive record of all animal detections and threat assessments</p>
-            
+
             <div class="header-stats">
                 <div class="stat-box">
-                    <div class="stat-value">{{ logs|length }}</div>
+                    <div class="stat-value">{{ all_logs|length }}</div>
                     <div class="stat-label">Total Detections</div>
                 </div>
+
                 <div class="stat-box">
                     <div class="stat-value">
-                        {{ logs|selectattr('risk', 'equalto', 'High')|list|length }}
+                        {{ all_logs|selectattr('risk', 'equalto', 'High')|list|length }}
                     </div>
                     <div class="stat-label">High Risk</div>
                 </div>
+
                 <div class="stat-box">
                     <div class="stat-value">24h</div>
                     <div class="stat-label">Time Period</div>
                 </div>
+
                 <div class="stat-box">
                     <div class="stat-value">
-                        {{ logs|map(attribute='animal')|unique|list|length }}
+                        {{ all_logs|map(attribute='animal')|unique|list|length }}
                     </div>
                     <div class="stat-label">Unique Species</div>
                 </div>
             </div>
         </header>
+
 
         <div class="controls">
             <button class="back-button">
@@ -410,11 +417,19 @@
             </button>
             
             <div class="filter-controls">
-                <button class="filter-btn active">All</button>
-                <button class="filter-btn">High Risk</button>
-                <button class="filter-btn">Today</button>
-                <button class="filter-btn">This Week</button>
+                <a class="filter-btn {% if risk_filter=='all' %}active{% endif %}"
+                href="{{ url_for('view_logs', risk='all') }}">All</a>
+
+                <a class="filter-btn {% if risk_filter=='high' %}active{% endif %}"
+                href="{{ url_for('view_logs', risk='high') }}">High Risk</a>
+
+                <a class="filter-btn {% if risk_filter=='today' %}active{% endif %}"
+                href="{{ url_for('view_logs', risk='today') }}">Today</a>
+
+                <a class="filter-btn {% if risk_filter=='week' %}active{% endif %}"
+                href="{{ url_for('view_logs', risk='week') }}">This Week</a>
             </div>
+
         </div>
 
         {% if logs %}
@@ -446,6 +461,13 @@
                             <span class="animal-icon">
                                 {% if 'bear' in log.animal|lower %}🐻
                                 {% elif 'wolf' in log.animal|lower %}🐺
+                                {% elif 'cat' in log.animal|lower %}🐈
+                                {% elif 'dog' in log.animal|lower %}🐕
+                                {% elif 'fox' in log.animal|lower %}🦊
+                                {% elif 'deer' in log.animal|lower %}🦌
+                                {% elif 'monkey' in log.animal|lower %}🐒
+                                {% elif 'crocodile' in log.animal|lower %}🐊
+                                {% elif 'alligator' in log.animal|lower %}🐊
                                 {% elif 'lion' in log.animal|lower %}🦁
                                 {% elif 'tiger' in log.animal|lower %}🐯
                                 {% elif 'snake' in log.animal|lower %}🐍
@@ -454,7 +476,7 @@
                                 {% elif 'rhino' in log.animal|lower %}🦏
                                 {% elif 'leopard' in log.animal|lower %}🐆
                                 {% elif 'hyena' in log.animal|lower %}🐕
-                                {% else %}🦌{% endif %}
+                                {% else %}{% endif %}
                             </span>
                             {{ log.animal }}
                         </td>
@@ -480,11 +502,21 @@
         </div>
 
         <div class="pagination">
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">Next →</button>
+            {% if page > 1 %}
+            <a class="page-btn" href="{{ url_for('view_logs', page=page-1, risk=risk_filter) }}">
+                ← Previous
+            </a>
+            {% endif %}
+
+            <span class="page-btn active">Page {{ page }} of {{ total_pages }}</span>
+
+            {% if page < total_pages %}
+            <a class="page-btn" href="{{ url_for('view_logs', page=page+1, risk=risk_filter) }}">
+                Next →
+            </a>
+            {% endif %}
         </div>
+
         {% else %}
         <div class="empty-logs">
             <h3>📭 No Detection Records Found</h3>
