@@ -3,7 +3,6 @@ import cv2
 from ultralytics import YOLO
 from datetime import datetime
 import os
-from email_alert import send_email_alert
 
 app = Flask(__name__)
 camera = cv2.VideoCapture(0)
@@ -36,8 +35,6 @@ def generate_frames():
                     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     filename = f"snapshots/{label}_{timestamp}.jpg"
                     cv2.imwrite(filename, frame)
-
-                    send_email_alert(label, filename)
                 else:
                     risk = "SAFE"
                     color = (0, 255, 0)
@@ -76,6 +73,13 @@ def view_logs():
 def gallery():
     images = os.listdir("snapshots")
     return render_template('gallery.html', images=images)
+
+from flask import send_from_directory
+
+@app.route('/snapshots/<filename>')
+def snapshots(filename):
+    return send_from_directory('snapshots', filename)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
