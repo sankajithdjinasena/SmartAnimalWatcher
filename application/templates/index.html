@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Animal Detection Dashboard</title>
+    <title>Smart Animal Watcher</title>
     <style>
         * {
             margin: 0;
@@ -194,7 +194,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>🐾 Smart Animal Intrusion Detection</h1>
+            <h1><span style="font-family: 'Courier New', Courier, monospace; font-size: 60px; color: black;" >Smart Animal Watcher</span><br>🐾 Smart Animal Intrusion Detection 🐾</h1>
             <p class="subtitle">Real-time monitoring system with AI-powered detection</p>
         </header>
 
@@ -210,7 +210,7 @@
             </div>
 
             <div class="stat-card">
-                <button id="toggleBtn" class="nav-button" onclick="toggleVideo()">Turn OFF Video</button>
+                <button id="toggleBtn" class="nav-button" onclick="toggleVideo()" title="Click to change Camera status">Turn OFF Camera</button>
                 <h3 style="margin-top: 15px;">Camera Status</h3>
             </div>
         </div>
@@ -218,8 +218,6 @@
         <div class="video-container">
             <img id="videoFeed" src="/video" width="720" alt="Live Animal Detection Feed">
         </div>
-
-    
 
         <div class="nav-links">
             <a href="/logs" class="nav-button logs">View Detection Logs</a>
@@ -235,10 +233,10 @@
 
             if (videoOn) {
                 video.src = "";                 // stop stream
-                button.innerText = "Turn ON Video";
+                button.innerText = "Turn ON Camera";
             } else {
                 video.src = "/video";           // resume stream
-                button.innerText = "Turn OFF Video";
+                button.innerText = "Turn OFF Camera";
             }
 
             videoOn = !videoOn;
