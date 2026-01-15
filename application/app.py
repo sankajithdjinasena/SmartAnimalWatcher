@@ -87,7 +87,6 @@ def view_logs():
     last_seen = {}
     COOLDOWN = 10  # seconds
 
-
     filtered_logs = logs.copy()
 
     # Sort by latest first
