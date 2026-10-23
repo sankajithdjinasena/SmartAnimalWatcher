@@ -574,13 +574,25 @@ td {
     border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: var(--shadow);
-    transition: transform 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .gallery-card:hover {
     transform: translateY(-6px);
-    border-color: var(--cyan);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.gallery-img-wrapper {
+    overflow: hidden;
+    position: relative;
+    background: #03080d;
+}
+
+.gallery-card:hover .gallery-img {
+    transform: scale(1.05);
 }
 
 .gallery-img {
@@ -589,14 +601,18 @@ td {
     object-fit: cover;
     display: block;
     background: #03080d;
+    transition: transform 0.35s ease;
 }
 
 .gallery-body {
-    padding: 16px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .gallery-title {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--text-primary);
     display: flex;

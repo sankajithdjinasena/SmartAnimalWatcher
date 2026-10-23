@@ -96,22 +96,32 @@
     </div>
 
     <div class="video-controls">
-        <div style="font-size: 0.88rem; line-height: 1.6;">
-            <div>🚨 <strong style="color: #ff80ab;">Dangerous Species (Triggers Owner Alert):</strong> <strong style="color: #fff;">Bears, Elephants</strong></div>
-            <div style="color: var(--text-secondary); margin-top: 2px;">🌿 <strong style="color: #a7f3d0;">Safe / Non-Dangerous Animals:</strong> <span>Cattle (Cows), Horses, Sheep, Dogs, Cats, Birds, Zebras</span></div>
+        <div style="font-size: 0.88rem; line-height: 1.6; max-width: 650px;">
+            <div>🚨 <strong style="color: #ff80ab;">Dangerous Species (Alerts Owner & Wildlife 1992):</strong> <span style="color: #fff; font-weight: 600;">Bears, Elephants, Leopards, Tigers, Snakes, Crocodiles, Wild Boars, Wolves</span></div>
+            <div style="color: var(--amber); margin-top: 2px;">⚠️ <strong>Caution (Property Threat):</strong> <span>Monkeys, Baboons</span></div>
+            <div style="color: var(--text-secondary); margin-top: 2px;">🌿 <strong style="color: #a7f3d0;">Safe / Non-Dangerous:</strong> <span>Cattle (Cows), Horses, Sheep, Dogs, Cats, Birds, Deer, Zebras</span></div>
         </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <!-- Instant Simulation Buttons for Testing -->
-            <form action="{{ url_for('simulate_threat', animal='elephant') }}" method="POST" style="margin: 0;">
-                <button type="submit" class="btn btn-danger btn-sm" title="Simulate Elephant intrusion detection">🧪 Test Elephant (Dangerous)</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <span style="font-size: 0.8rem; color: var(--text-muted); width: 100%;">Instant Detection Simulator:</span>
+            <form action="{{ url_for('simulate_threat', animal='leopard') }}" method="POST" style="margin: 0;">
+                <button type="submit" class="btn btn-danger btn-sm" title="Simulate Leopard intrusion">🐆 Leopard</button>
             </form>
-            <form action="{{ url_for('simulate_threat', animal='bear') }}" method="POST" style="margin: 0;">
-                <button type="submit" class="btn btn-danger btn-sm" title="Simulate Bear intrusion detection">🧪 Test Bear (Dangerous)</button>
+            <form action="{{ url_for('simulate_threat', animal='snake') }}" method="POST" style="margin: 0;">
+                <button type="submit" class="btn btn-danger btn-sm" title="Simulate Venomous Snake intrusion">🐍 Snake</button>
+            </form>
+            <form action="{{ url_for('simulate_threat', animal='wild_boar') }}" method="POST" style="margin: 0;">
+                <button type="submit" class="btn btn-danger btn-sm" title="Simulate Wild Boar intrusion">🐗 Wild Boar</button>
+            </form>
+            <form action="{{ url_for('simulate_threat', animal='elephant') }}" method="POST" style="margin: 0;">
+                <button type="submit" class="btn btn-danger btn-sm" title="Simulate Elephant intrusion">🐘 Elephant</button>
+            </form>
+            <form action="{{ url_for('simulate_threat', animal='monkey') }}" method="POST" style="margin: 0;">
+                <button type="submit" class="btn btn-warning btn-sm" title="Simulate Monkey property raid">🐒 Monkey</button>
             </form>
             <form action="{{ url_for('simulate_threat', animal='cow') }}" method="POST" style="margin: 0;">
-                <button type="submit" class="btn btn-outline btn-sm" title="Simulate harmless cow">🧪 Test Cow (Safe)</button>
+                <button type="submit" class="btn btn-outline btn-sm" title="Simulate harmless cow">🐄 Cow (Safe)</button>
             </form>
-            <button onclick="openWildlifeModal()" class="btn btn-wildlife btn-sm">📞 Wildlife Service (1992)</button>
+            <button onclick="openWildlifeModal()" class="btn btn-wildlife btn-sm">📞 Hotline (1992)</button>
         </div>
     </div>
 </div>
@@ -140,22 +150,15 @@
                 {% for d in recent_detections %}
                 <tr>
                     <td>
-                        <strong style="text-transform: capitalize; font-size: 1.05rem;">
-                            {% if d.animal == 'bear' %}🐻 Bear
-                            {% elif d.animal == 'elephant' %}🐘 Elephant
-                            {% elif d.animal == 'cow' %}🐄 Cow
-                            {% elif d.animal == 'horse' %}🐎 Horse
-                            {% elif d.animal == 'zebra' %}🦓 Zebra
-                            {% elif d.animal == 'dog' %}🐕 Dog
-                            {% elif d.animal == 'cat' %}🐈 Cat
-                            {% elif d.animal == 'bird' %}🐦 Bird
-                            {% else %}🐾 {{ d.animal }}
-                            {% endif %}
+                        <strong style="font-size: 1.05rem;">
+                            {{ get_animal_display(d.animal) }}
                         </strong>
                     </td>
                     <td>
                         {% if d.threat_level in ['DANGEROUS', 'CRITICAL'] %}
                         <span class="badge badge-critical">🚨 DANGEROUS</span>
+                        {% elif d.threat_level == 'CAUTION' %}
+                        <span class="badge badge-moderate">⚠️ CAUTION (Property)</span>
                         {% else %}
                         <span class="badge badge-safe">✅ SAFE (Non-Dangerous)</span>
                         {% endif %}

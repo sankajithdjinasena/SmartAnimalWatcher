@@ -95,27 +95,15 @@
                 {% for log in logs %}
                 <tr>
                     <td>
-                        <strong style="text-transform: capitalize; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
-                            <span>
-                                {% if log.animal == 'bear' %}🐻
-                                {% elif log.animal == 'elephant' %}🐘
-                                {% elif log.animal == 'cow' %}🐄
-                                {% elif log.animal == 'horse' %}🐎
-                                {% elif log.animal == 'zebra' %}🦓
-                                {% elif log.animal == 'giraffe' %}🦒
-                                {% elif log.animal == 'sheep' %}🐑
-                                {% elif log.animal == 'dog' %}🐕
-                                {% elif log.animal == 'cat' %}🐈
-                                {% elif log.animal == 'bird' %}🐦
-                                {% else %}🐾
-                                {% endif %}
-                            </span>
-                            <span>{{ log.animal }}</span>
+                        <strong style="font-size: 1.05rem;">
+                            {{ get_animal_display(log.animal) }}
                         </strong>
                     </td>
                     <td>
                         {% if log.threat_level in ['DANGEROUS', 'CRITICAL'] %}
                         <span class="badge badge-critical">🚨 DANGEROUS</span>
+                        {% elif log.threat_level == 'CAUTION' %}
+                        <span class="badge badge-moderate">⚠️ CAUTION (Property)</span>
                         {% else %}
                         <span class="badge badge-safe">✅ SAFE (Non-Dangerous)</span>
                         {% endif %}

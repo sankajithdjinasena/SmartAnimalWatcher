@@ -18,7 +18,10 @@ from flask import (
 from ultralytics import YOLO
 
 # Project modules
-from animal_config import classify_animal, ANIMAL_EMOJIS, COCO_ANIMALS
+from animal_config import (
+    classify_animal, get_animal_display, parse_snapshot_info,
+    DANGEROUS_SPECIES, SAFE_SPECIES
+)
 from database import (
     init_db, register_user, authenticate_user, reset_password,
     get_user_by_id, add_detection, get_detections, clear_all_detections,
@@ -40,6 +43,10 @@ if not os.path.exists(SNAPSHOTS_DIR):
 # Initialize Flask App & Database
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "animal_watcher_super_secret_key_2026")
+app.jinja_env.globals.update(
+    get_animal_display=get_animal_display,
+    parse_snapshot_info=parse_snapshot_info
+)
 init_db()
 
 # Load YOLO Model
@@ -360,6 +367,8 @@ def simulate_threat(animal):
             owner_user=current_owner
         )
         flash(f"🚨 CRITICAL ALERT TRIGGERED: Dangerous {animal.upper()} simulated! SMS sent to {session.get('user_phone')}.", "danger")
+    elif threat_level == "CAUTION":
+        flash(f"⚠️ PROPERTY CAUTION: {animal.upper()} detected. Invasive troop/property threat recorded (no emergency siren).", "warning")
     else:
         flash(f"ℹ️ SAFE SPECIES RECORDED: {animal.upper()} is classified as SAFE / Non-Dangerous farm animal. No emergency alert triggered.", "success")
 

@@ -194,6 +194,8 @@ def get_detections(limit=None, risk_filter="all"):
 
     if risk_filter in ["dangerous", "critical"]:
         query += " WHERE threat_level IN ('DANGEROUS', 'CRITICAL')"
+    elif risk_filter == "caution":
+        query += " WHERE threat_level = 'CAUTION'"
     elif risk_filter == "safe":
         query += " WHERE threat_level = 'SAFE'"
     elif risk_filter == "today":
