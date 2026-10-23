@@ -7,10 +7,10 @@ A real-time AI-powered surveillance system that detects animals entering a home 
 ## 🚀 Key Features
 
 - 🎥 **Real-time Camera Surveillance**: Live MJPEG video stream with YOLOv8 object detection.
-- 🧠 **Accurate Animal Threat Classification**:
-  - 🚨 **Critical Danger**: Wild Elephants, Bears (triggers instant Owner SMS alert, snapshot capture, and Wildlife Emergency protocol).
-  - ⚠️ **Moderate Caution**: Cows, Horses, Zebras, Giraffes (monitors perimeter & crop intrusion).
-  - ✅ **Safe / Domestic**: Dogs, Cats, Birds, Sheep (safe domestic species).
+- 🧠 **Extended Animal Threat Classification**:
+  - 🚨 **Dangerous Wild Animals**: Wild Elephants, Bears, Leopards, Tigers, Venomous Snakes, Crocodiles, Wild Boars, Wolves, Hyenas (triggers instant Owner SMS alert, snapshot capture, and Wildlife Emergency 1992 protocol).
+  - ⚠️ **Caution (Property / Troop Threat)**: Monkeys, Baboons (invasive property breaches & crop damage).
+  - ✅ **Safe / Non-Dangerous**: Cattle (Cows), Horses, Sheep, Dogs, Cats, Birds, Deer, Zebras.
   - 🚫 Non-animal objects (humans, vehicles, furniture) are safely excluded from animal logs.
 - 📱 **Owner Account & Person Number System**:
   - Secure Owner Sign In, Sign Up, and Password Reset.
