@@ -1,5 +1,4 @@
 @echo off
-cd E:\Project\AnimalDetector\application
-
-start "" "flask_app.bat"
-
+:: Navigate to application folder relative to this script
+cd /d "%~dp0application"
+call flask_app.bat

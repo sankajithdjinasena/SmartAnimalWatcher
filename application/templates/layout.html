@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Animal Watcher{% endblock %} | AI Security</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="{{ url_for('index') }}" class="brand">
+                <span class="brand-icon">🐾</span>
+                <span>Smart Animal Watcher</span>
+            </a>
+
+            {% if session.get('user_id') %}
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">🎥 Live Monitor</a></li>
+                <li><a href="{{ url_for('view_logs') }}" class="nav-item {% if request.endpoint == 'view_logs' %}active{% endif %}">📋 Detection Logs</a></li>
+                <li><a href="{{ url_for('gallery') }}" class="nav-item {% if request.endpoint == 'gallery' %}active{% endif %}">📸 Threat Gallery</a></li>
+                <li><button onclick="openWildlifeModal()" class="btn btn-wildlife btn-sm">🚨 Wildlife Service (1992)</button></li>
+            </ul>
+
+            <div class="nav-user">
+                <span class="user-badge">👤 {{ session.get('user_name', 'Owner') }}</span>
+                <span class="phone-tag" title="Owner registered phone for critical SMS alerts">📱 {{ session.get('user_phone', '') }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">Sign Out</a>
+            </div>
+            {% else %}
+            <div class="nav-links">
+                <a href="{{ url_for('login') }}" class="btn btn-outline btn-sm">Sign In</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">Sign Up (Owner)</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">
+                    <span>{% if category == 'success' %}✅{% elif category in ['danger', 'error'] %}⚠️{% else %}ℹ️{% endif %}</span>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Wildlife Emergency Response Modal -->
+    <div id="wildlifeModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🚨 Wildlife Emergency Service Contact</h3>
+                <button onclick="closeWildlifeModal()" class="close-btn">&times;</button>
+            </div>
+            <div style="margin-bottom: 20px; color: var(--text-secondary); line-height: 1.6;">
+                <p>When very dangerous animals (e.g. <strong>Wild Elephants</strong> or <strong>Bears</strong>) breach security perimeters, do not approach or provoke them.</p>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+                <h4 style="color: #6ee7b7; margin-bottom: 8px;">Department of Wildlife Conservation</h4>
+                <div style="font-size: 1.8rem; font-weight: 800; color: #ffffff; letter-spacing: 1px; margin-bottom: 8px;">
+                    📞 Hotline: 1992
+                </div>
+                <p style="font-size: 0.88rem; color: #a7f3d0;">24/7 National Human-Elephant & Wild Animal Conflict Rapid Response Team</p>
+                <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="tel:1992" class="btn btn-wildlife" style="flex: 1;">Direct Call 1992</a>
+                    <a href="tel:119" class="btn btn-outline" style="flex: 1;">Police 119</a>
+                </div>
+            </div>
+
+            <form action="{{ url_for('dispatch_wildlife_report') }}" method="POST">
+                <div class="form-group">
+                    <label class="form-label">Incident / Threat Note</label>
+                    <textarea name="incident_details" class="form-input" rows="3" placeholder="Describe detected animal location and behavior..."></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                    <button type="button" onclick="closeWildlifeModal()" class="btn btn-outline">Close</button>
+                    <button type="submit" class="btn btn-danger">🚨 Log Wildlife Incident Alert</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>🐾 Smart Animal Intrusion Detection System v3.0 | Real-time YOLOv8 Computer Vision Surveillance | Wildlife Emergency: 1992</p>
+    </footer>
+
+    <script>
+        function openWildlifeModal() {
+            document.getElementById('wildlifeModal').classList.add('show');
+        }
+        function closeWildlifeModal() {
+            document.getElementById('wildlifeModal').classList.remove('show');
+        }
+        window.onclick = function(event) {
+            const modal = document.getElementById('wildlifeModal');
+            if (event.target === modal) {
+                closeWildlifeModal();
+            }
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

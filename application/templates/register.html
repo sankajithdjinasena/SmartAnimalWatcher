@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block title %}Owner Registration{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div style="font-size: 2.8rem; margin-bottom: 8px;">🛡️</div>
+            <h2>Register Property Owner</h2>
+            <p>Register your phone number to receive instant SMS alerts when dangerous animals are detected.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-group">
+                <label class="form-label">Full Name / Owner Name</label>
+                <input type="text" name="name" class="form-input" placeholder="e.g. John Silva" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Owner Phone Number (Person Number for Alerts)</label>
+                <input type="tel" name="phone" class="form-input" placeholder="e.g. 0771234567 or +94771234567" required>
+                <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px; display: block;">
+                    ⚠️ Critical danger alerts (Bear / Elephant) will be dispatched directly to this number.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-input" placeholder="e.g. owner@gmail.com" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-input" placeholder="Minimum 6 characters" minlength="6" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="confirm_password" class="form-input" placeholder="Re-enter password" minlength="6" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 1rem; margin-top: 10px;">
+                Complete Registration & Setup Alerts
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Already registered? <a href="{{ url_for('login') }}" style="font-weight: 600;">Sign In</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

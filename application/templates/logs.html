@@ -1,584 +1,182 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Smart Animal Watcher | Detection Logs - Security System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Roboto', 'Ubuntu', sans-serif;
-        }
+{% extends "layout.html" %}
+{% block title %}Detection History Logs{% endblock %}
 
-        body {
-            background: linear-gradient(135deg, #0c2b5e 0%, #0c3b6c 100%);
-            color: #e3f2fd;
-            min-height: 100vh;
-            padding: 20px;
-        }
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <h1 style="color: var(--cyan); font-size: 2rem; font-weight: 800; display: flex; align-items: center; gap: 12px;">
+            <span>📋</span> Animal Intrusion Detection Logs
+        </h1>
+        <p style="color: var(--text-secondary); margin-top: 6px;">
+            Comprehensive audit trail of detected animals, threat levels, and owner alert dispatches.
+        </p>
+    </div>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button onclick="confirmClearLogs()" class="btn btn-danger">
+            🗑️ Clear All Detection Logs
+        </button>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            🎥 Return to Live Monitor
+        </a>
+    </div>
+</div>
 
-        body a {
-            text-decoration: none;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px;
-            background: rgba(13, 27, 42, 0.85);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(3, 155, 229, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #039be5, #29b6f6, #039be5);
-        }
-
-        h1 {
-            font-size: 2.8rem;
-            color: #81d4fa;
-            text-shadow: 0 0 15px rgba(33, 150, 243, 0.3);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        h1::before {
-            content: '📋';
-            font-size: 2.5rem;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #bbdefb;
-            opacity: 0.9;
-            margin-top: 10px;
-        }
-
-        .header-stats {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-        }
-
-        .stat-box {
-            background: rgba(30, 136, 229, 0.2);
-            padding: 15px 25px;
-            border-radius: 10px;
-            min-width: 180px;
-            text-align: center;
-            border: 1px solid rgba(33, 150, 243, 0.3);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #29b6f6;
-            text-shadow: 0 0 10px rgba(41, 182, 246, 0.3);
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #bbdefb;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(13, 27, 42, 0.7);
-            border-radius: 15px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 35px;
-            background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(13, 71, 161, 0.3);
-            border: none;
-            cursor: pointer;
-        }
-
-        .back-button:hover {
-            transform: translateX(-3px);
-            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-            box-shadow: 0 8px 20px rgba(13, 71, 161, 0.4);
-        }
-
-        .back-button::before {
-            content: '←';
-            font-size: 1.2rem;
-        }
-
-        .filter-controls {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 10px 25px;
-            background: rgba(30, 136, 229, 0.2);
-            border: 1px solid rgba(33, 150, 243, 0.3);
-            color: #bbdefb;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: #2196f3;
-            color: white;
-            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
-        }
-
-        .logs-container {
-            background: rgba(13, 27, 42, 0.8);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(3, 155, 229, 0.2);
-            margin-bottom: 40px;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-
-        thead {
-            background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
-        }
-
-        th {
-            padding: 20px 15px;
-            text-align: left;
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-        }
-
-        th:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 50%;
-            width: 1px;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        tbody tr {
-            border-bottom: 1px solid rgba(33, 150, 243, 0.1);
-            transition: all 0.2s ease;
-        }
-
-        tbody tr:hover {
-            background: rgba(30, 136, 229, 0.1);
-            transform: scale(1.002);
-        }
-
-        td {
-            padding: 18px 15px;
-            color: #e3f2fd;
-        }
-
-        /* Animal cell styling */
-        td:first-child {
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .animal-icon {
-            font-size: 1.4rem;
-            width: 30px;
-            text-align: center;
-        }
-
-        /* Risk level styling */
-        .risk-badge {
-            display: inline-block;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .risk-low {
-            background: rgba(76, 175, 80, 0.2);
-            color: #81c784;
-            border: 1px solid rgba(76, 175, 80, 0.3);
-        }
-
-        .risk-medium {
-            background: rgba(255, 152, 0, 0.2);
-            color: #ffb74d;
-            border: 1px solid rgba(255, 152, 0, 0.3);
-        }
-
-        .risk-high {
-            background: rgba(244, 67, 54, 0.2);
-            color: #ef9a9a;
-            border: 1px solid rgba(244, 67, 54, 0.3);
-        }
-
-        .risk-critical {
-            background: linear-gradient(135deg, rgba(244, 67, 54, 0.3), rgba(229, 57, 53, 0.2));
-            color: #ffcdd2;
-            border: 1px solid rgba(244, 67, 54, 0.4);
-            box-shadow: 0 0 10px rgba(244, 67, 54, 0.2);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.8;
-            }
-        }
-
-        /* Time cell styling */
-        td:last-child {
-            color: #90caf9;
-            font-family: 'Courier New', monospace;
-            font-size: 0.95rem;
-        }
-
-        .empty-logs {
-            text-align: center;
-            padding: 60px 20px;
-            color: #90a4ae;
-        }
-
-        .empty-logs h3 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            color: #78909c;
-        }
-
-        .empty-logs p {
-            font-size: 1.1rem;
-            opacity: 0.8;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 30px;
-        }
-
-        .page-btn {
-            padding: 10px 20px;
-            background: rgba(30, 136, 229, 0.2);
-            border: 1px solid rgba(33, 150, 243, 0.3);
-            color: #bbdefb;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .page-btn:hover,
-        .page-btn.active {
-            background: #2196f3;
-            color: white;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            color: #78909c;
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(33, 150, 243, 0.1);
-        }
-
-        .timestamp {
-            font-family: 'Courier New', monospace;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 3px 8px;
-            border-radius: 4px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            h1 {
-                font-size: 2rem;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-controls {
-                justify-content: center;
-            }
-
-            .stat-box {
-                min-width: 140px;
-                padding: 12px 20px;
-            }
-
-            th,
-            td {
-                padding: 12px 10px;
-                font-size: 0.9rem;
-            }
-
-            .back-button {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Detection History Log</h1>
-            <p class="subtitle">Comprehensive record of all animal detections and threat assessments</p>
-
-            <div class="header-stats">
-                <div class="stat-box">
-                    <div class="stat-value">{{ all_logs|length }}</div>
-                    <div class="stat-label">Total Detections</div>
-                </div>
-
-                <div class="stat-box">
-                    <div class="stat-value">
-                        {{ all_logs|selectattr('risk', 'equalto', 'High')|list|length }}
-                    </div>
-                    <div class="stat-label">High Risk</div>
-                </div>
-
-                <div class="stat-box">
-                    <div class="stat-value">24h</div>
-                    <div class="stat-label">Time Period</div>
-                </div>
-
-                <div class="stat-box">
-                    <div class="stat-value">
-                        {{ all_logs|map(attribute='animal')|unique|list|length }}
-                    </div>
-                    <div class="stat-label">Unique Species</div>
-                </div>
-            </div>
-        </header>
-
-
-        <div class="controls">
-            <button class="back-button">
-                <a href="{{ url_for('index') }}" style="color: inherit; text-decoration: none;">
-                    Back to Live Dashboard
-                </a>
-            </button>
-            
-            <div class="filter-controls">
-                <a class="filter-btn {% if risk_filter=='all' %}active{% endif %}"
-                href="{{ url_for('view_logs', risk='all') }}">All</a>
-
-                <a class="filter-btn {% if risk_filter=='high' %}active{% endif %}"
-                href="{{ url_for('view_logs', risk='high') }}">High Risk</a>
-
-                <a class="filter-btn {% if risk_filter=='today' %}active{% endif %}"
-                href="{{ url_for('view_logs', risk='today') }}">Today</a>
-
-                <a class="filter-btn {% if risk_filter=='week' %}active{% endif %}"
-                href="{{ url_for('view_logs', risk='week') }}">This Week</a>
-            </div>
-
+<!-- Stats Strip -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-data">
+            <h4>Total Records</h4>
+            <div class="value">{{ stats.total }}</div>
         </div>
-
-        {% if logs %}
-        <div class="logs-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 30%;">
-                            <span style="display: flex; align-items: center; gap: 10px;">
-                                <span>🦁</span> Animal Species
-                            </span>
-                        </th>
-                        <th style="width: 25%;">
-                            <span style="display: flex; align-items: center; gap: 10px;">
-                                <span>⚠️</span> Threat Level
-                            </span>
-                        </th>
-                        <th style="width: 45%;">
-                            <span style="display: flex; align-items: center; gap: 10px;">
-                                <span>🕒</span> Detection Timestamp
-                            </span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in logs %}
-                    <tr>
-                        <td>
-                            <span class="animal-icon">
-                                {% if 'bear' in log.animal|lower %}🐻
-                                {% elif 'wolf' in log.animal|lower %}🐺
-                                {% elif 'cat' in log.animal|lower %}🐈
-                                {% elif 'dog' in log.animal|lower %}🐕
-                                {% elif 'fox' in log.animal|lower %}🦊
-                                {% elif 'deer' in log.animal|lower %}🦌
-                                {% elif 'monkey' in log.animal|lower %}🐒
-                                {% elif 'crocodile' in log.animal|lower %}🐊
-                                {% elif 'alligator' in log.animal|lower %}🐊
-                                {% elif 'lion' in log.animal|lower %}🦁
-                                {% elif 'tiger' in log.animal|lower %}🐯
-                                {% elif 'snake' in log.animal|lower %}🐍
-                                {% elif 'boar' in log.animal|lower %}🐗
-                                {% elif 'elephant' in log.animal|lower %}🐘
-                                {% elif 'rhino' in log.animal|lower %}🦏
-                                {% elif 'leopard' in log.animal|lower %}🐆
-                                {% elif 'hyena' in log.animal|lower %}🐕
-                                {% else %}{% endif %}
-                            </span>
-                            {{ log.animal }}
-                        </td>
-                        <td>
-                            {% set risk_class = 'risk-' + log.risk|lower %}
-                            {% if log.risk|lower == 'critical' %}
-                            <span class="risk-badge risk-critical">🚨 {{ log.risk }}</span>
-                            {% elif log.risk|lower == 'high' %}
-                            <span class="risk-badge risk-high">⚠️ {{ log.risk }}</span>
-                            {% elif log.risk|lower == 'medium' %}
-                            <span class="risk-badge risk-medium">🔸 {{ log.risk }}</span>
-                            {% else %}
-                            <span class="risk-badge risk-low">✅ {{ log.risk }}</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span class="timestamp">{{ log.time }}</span>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="pagination">
-            {% if page > 1 %}
-            <a class="page-btn" href="{{ url_for('view_logs', page=page-1, risk=risk_filter) }}">
-                ← Previous
-            </a>
-            {% endif %}
-
-            <span class="page-btn active">Page {{ page }} of {{ total_pages }}</span>
-
-            {% if page < total_pages %}
-            <a class="page-btn" href="{{ url_for('view_logs', page=page+1, risk=risk_filter) }}">
-                Next →
-            </a>
-            {% endif %}
-        </div>
-
-        {% else %}
-        <div class="empty-logs">
-            <h3>📭 No Detection Records Found</h3>
-            <p>The system has not recorded any animal detections yet.</p>
-            <p>Detection logs will appear here when animals are detected.</p>
-        </div>
-        {% endif %}
-
-        <footer>
-            <p>Detection System v2.1 | Logs updated in real-time | 
-                <span class="timestamp">Last refresh: {{ logs[-1].time if logs else 'No data' }}</span>
-            </p>
-        </footer>
     </div>
 
-    <script>
-        // Add interactivity to filter buttons
-        document.querySelectorAll('.filter-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                document.querySelectorAll('.filter-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                // Add active class to clicked button
-                this.classList.add('active');
-                
-                // Here you would typically filter the logs based on the selected filter
-                console.log('Filter clicked:', this.textContent);
-            });
-        });
+    <div class="stat-card">
+        <div class="stat-icon danger">🚨</div>
+        <div class="stat-data">
+            <h4>Dangerous Threats</h4>
+            <div class="value" style="color: var(--red);">{{ stats.dangerous }}</div>
+        </div>
+    </div>
 
-        // Add row click functionality
-        document.querySelectorAll('tbody tr').forEach(row => {
-            row.addEventListener('click', function() {
-                this.style.backgroundColor = 'rgba(30, 136, 229, 0.15)';
-                
-                // Here you could implement a detail view for the log entry
-                const animal = this.cells[0].textContent.trim();
-                console.log('Log entry clicked:', animal);
-            });
-        });
+    <div class="stat-card">
+        <div class="stat-icon safe">🌿</div>
+        <div class="stat-data">
+            <h4>Safe Animals</h4>
+            <div class="value" style="color: var(--green);">{{ stats.safe }}</div>
+        </div>
+    </div>
 
-        // Auto-refresh simulation
-        setInterval(() => {
-            const lastUpdate = document.querySelector('.timestamp');
-            if (lastUpdate) {
-                const now = new Date();
-                const timeString = now.toLocaleTimeString();
-                lastUpdate.textContent = timeString;
-            }
-        }, 60000); // Update every minute
-    </script>
-</body>
-</html>
+    <div class="stat-card">
+        <div class="stat-icon">🐾</div>
+        <div class="stat-data">
+            <h4>Species Count</h4>
+            <div class="value">{{ stats.unique_species }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters Bar -->
+<div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{{ url_for('view_logs', risk='all') }}" class="btn btn-sm {% if risk_filter == 'all' %}btn-primary{% else %}btn-outline{% endif %}">
+            All Detections
+        </a>
+        <a href="{{ url_for('view_logs', risk='dangerous') }}" class="btn btn-sm {% if risk_filter == 'dangerous' %}btn-danger{% else %}btn-outline{% endif %}">
+            🚨 Dangerous Animals (Bears / Elephants)
+        </a>
+        <a href="{{ url_for('view_logs', risk='safe') }}" class="btn btn-sm {% if risk_filter == 'safe' %}btn-primary{% else %}btn-outline{% endif %}">
+            🌿 Safe Animals (Cows, Horses, Pets)
+        </a>
+        <a href="{{ url_for('view_logs', risk='today') }}" class="btn btn-sm {% if risk_filter == 'today' %}btn-primary{% else %}btn-outline{% endif %}">
+            📅 Today Only
+        </a>
+    </div>
+
+    <div style="color: var(--text-muted); font-size: 0.88rem;">
+        Showing {{ logs|length }} of {{ total }} records
+    </div>
+</div>
+
+<!-- Logs Table -->
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 25%;">Animal Species</th>
+                <th style="width: 20%;">Threat Classification</th>
+                <th style="width: 20%;">Confidence Level</th>
+                <th style="width: 20%;">Timestamp</th>
+                <th style="width: 15%;">Evidence Snapshot</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if logs %}
+                {% for log in logs %}
+                <tr>
+                    <td>
+                        <strong style="text-transform: capitalize; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                            <span>
+                                {% if log.animal == 'bear' %}🐻
+                                {% elif log.animal == 'elephant' %}🐘
+                                {% elif log.animal == 'cow' %}🐄
+                                {% elif log.animal == 'horse' %}🐎
+                                {% elif log.animal == 'zebra' %}🦓
+                                {% elif log.animal == 'giraffe' %}🦒
+                                {% elif log.animal == 'sheep' %}🐑
+                                {% elif log.animal == 'dog' %}🐕
+                                {% elif log.animal == 'cat' %}🐈
+                                {% elif log.animal == 'bird' %}🐦
+                                {% else %}🐾
+                                {% endif %}
+                            </span>
+                            <span>{{ log.animal }}</span>
+                        </strong>
+                    </td>
+                    <td>
+                        {% if log.threat_level in ['DANGEROUS', 'CRITICAL'] %}
+                        <span class="badge badge-critical">🚨 DANGEROUS</span>
+                        {% else %}
+                        <span class="badge badge-safe">✅ SAFE (Non-Dangerous)</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.confidence %}
+                        <span style="font-family: monospace; color: var(--cyan);">{{ (log.confidence * 100)|round(1) }}%</span>
+                        {% else %}
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Standard</span>
+                        {% endif %}
+                    </td>
+                    <td class="timestamp">{{ log.time }}</td>
+                    <td>
+                        {% if log.snapshot %}
+                        <a href="{{ url_for('snapshots', filename=log.snapshot) }}" target="_blank" class="btn btn-outline btn-sm">
+                            🖼️ View Snapshot
+                        </a>
+                        {% else %}
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">No file</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 50px 20px; color: var(--text-muted);">
+                        <div style="font-size: 2.2rem; margin-bottom: 10px;">📭</div>
+                        <h3 style="color: var(--text-secondary); margin-bottom: 6px;">No Detection Records Found</h3>
+                        <p style="font-size: 0.9rem;">No entries match your current filter criteria.</p>
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div style="display: flex; justify-content: center; gap: 10px; margin-top: 26px;">
+    {% if page > 1 %}
+    <a href="{{ url_for('view_logs', page=page-1, risk=risk_filter) }}" class="btn btn-outline btn-sm">&larr; Previous</a>
+    {% endif %}
+
+    <span class="btn btn-outline btn-sm" style="background: rgba(0, 229, 255, 0.15); border-color: var(--cyan); color: var(--cyan);">
+        Page {{ page }} of {{ total_pages }}
+    </span>
+
+    {% if page < total_pages %}
+    <a href="{{ url_for('view_logs', page=page+1, risk=risk_filter) }}" class="btn btn-outline btn-sm">Next &rarr;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Form to clear logs -->
+<form id="clearLogsForm" action="{{ url_for('clear_detections') }}" method="POST" style="display: none;"></form>
+
+<script>
+function confirmClearLogs() {
+    if (confirm("Are you sure you want to completely clear all detection history logs? This action cannot be undone.")) {
+        document.getElementById('clearLogsForm').submit();
+    }
+}
+</script>
+{% endblock %}
